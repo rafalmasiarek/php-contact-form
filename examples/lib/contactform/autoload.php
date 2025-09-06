@@ -30,10 +30,6 @@ $__cf_classmap = [
     'rafalmasiarek\\ContactForm\\Support\\NullLogger'            => 'Support/NullLogger.php',
 
     'rafalmasiarek\\ContactForm\\Mail\\PhpMailerEmailSender'     => 'Mail/PhpMailerEmailSender.php',
-
-    'rafalmasiarek\\ContactForm\\Http\\IpResolverInterface'      => 'Http/IpResolverInterface.php',
-    'rafalmasiarek\\ContactForm\\Http\\DefaultIpResolver'        => 'Http/DefaultIpResolver.php',
-    'rafalmasiarek\\ContactForm\\Http\\Psr7IpResolver'           => 'Http/Psr7IpResolver.php',
 ];
 
 spl_autoload_register(static function (string $class) use ($__cf_prefix, $__cf_baseDir, $__cf_classmap): void {

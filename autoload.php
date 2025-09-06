@@ -14,7 +14,6 @@ declare(strict_types=1);
  *       Model/
  *       Support/
  *       Mail/
- *       Http/
  */
 
 // Namespace prefix and base directory
@@ -54,11 +53,6 @@ $__cf_classmap = [
 
     // Mail
     'rafalmasiarek\\ContactForm\\Mail\\PhpMailerEmailSender'     => 'Mail/PhpMailerEmailSender.php',
-
-    // Http
-    'rafalmasiarek\\ContactForm\\Http\\IpResolverInterface'      => 'Http/IpResolverInterface.php',
-    'rafalmasiarek\\ContactForm\\Http\\DefaultIpResolver'        => 'Http/DefaultIpResolver.php',
-    'rafalmasiarek\\ContactForm\\Http\\Psr7IpResolver'           => 'Http/Psr7IpResolver.php',
 ];
 
 // Register autoloader
