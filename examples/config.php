@@ -15,9 +15,19 @@ return [
     ],
 
     'captcha' => [
-        'field'       => 'captcha_answer',   // name="" in the form
+        'field'        => 'captcha_answer',   // name="" in the form
         'meta_key'    => 'captcha_answer',   // where hook stores the value in meta
         'session_key' => 'captcha_expected', // where generateChallenge stores the expected result
         'one_shot'    => true,               // unset expected after first check
+    ],
+
+    'hooks' => [
+        'annotate_ip' => [
+            'trust'          => ['127.0.0.1', '::1', '10.0.0.0/8'],
+            'prioritize'     => ['forwarded', 'x-forwarded-for', 'cf-connecting-ip', 'true-client-ip', 'x-real-ip'],
+            'allow_private'  => true,
+            'attach_ua'      => true,
+            'attach_referer' => false,
+        ],
     ],
 ];

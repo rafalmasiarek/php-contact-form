@@ -68,7 +68,7 @@ $cfg = require __DIR__ . '/../config.php';
 function buildEmailSender(array $smtp): EmailSenderInterface
 {
   // 1) Preferred: PHPMailer adapter (SMTP)
-  if (class_exists(\PHPMailer\PHPMailer\PHPMailer::class)) {
+  if (\class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
     /** @var EmailSenderInterface $sender */
     $sender = new PhpMailerEmailSender($smtp);
     return $sender;
@@ -128,7 +128,13 @@ if ($uri === '/send' && $method === 'POST') {
       'validate:email'    => FieldsValidator::email('email', 'strict'),
     ])
     ->setHooks([
-      new AnnotateIpHook(),
+      new AnnotateIpHook([
+        'trust'         => $cfg['hooks']['annotate_ip']['trust']         ?? [],
+        'prioritize'    => $cfg['hooks']['annotate_ip']['prioritize']    ?? null,
+        'allowPrivate'  => $cfg['hooks']['annotate_ip']['allow_private'] ?? true,
+        'attachUA'      => $cfg['hooks']['annotate_ip']['attach_ua']     ?? true,
+        'attachReferer' => $cfg['hooks']['annotate_ip']['attach_referer'] ?? false,
+      ]),
       new MathCaptchaHook(
         field: (string)$cfg['captcha']['field'],
         metaKey: (string)$cfg['captcha']['meta_key']

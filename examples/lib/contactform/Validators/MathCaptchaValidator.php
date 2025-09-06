@@ -47,7 +47,7 @@ final class MathCaptchaValidator
     public static function registerDefaultMessages(ArrayMessageResolver $resolver): void
     {
         $resolver->extend([
-            self::CAPTCHA_MISSING => ['message' => 'Captcha token is missing or expired.', 'http' => 422],
+            self::CAPTCHA_MISSING => ['message' => 'Captcha token is missing or expired.',  'http' => 422],
             self::CAPTCHA_INVALID => ['message' => 'Captcha answer is invalid.',            'http' => 422],
         ]);
     }
