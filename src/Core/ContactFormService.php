@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace rafalmasiarek\ContactForm\Core;
 
-
 use rafalmasiarek\ContactForm\Contracts\MessageResolverInterface;
 use rafalmasiarek\ContactForm\Contracts\EmailSenderInterface;
 use rafalmasiarek\ContactForm\Contracts\AttemptLoggerInterface;
@@ -51,7 +50,6 @@ final class ContactFormService
 
     /** @var AttemptLoggerInterface Logger implementation (defaults to {@see NullLogger}). */
     private AttemptLoggerInterface $logger;
-
 
     /** @var array<string,mixed> */
     private array $context = [];
@@ -340,7 +338,6 @@ final class ContactFormService
      */
     public function process(ContactData $data): array
     {
-
         // Attach selected client/server context into meta (if provided)
         if (isset($this->context['client']) && is_array($this->context['client'])) {
             $client = $this->context['client'];
@@ -383,20 +380,51 @@ final class ContactFormService
                         }
                     }
                 }
+
                 $ro = ContactDataValidator::from($data);
 
-                $ret = $validator($ro);
-                $item = \is_array($ret) ? $ret : ['status' => 'OK'];
-                $this->meta['validators'][$label][] = $item;
+                try {
+                    $ret  = $validator($ro);
+                    $item = \is_array($ret) ? $ret : ['status' => 'OK'];
 
-                if (!empty($this->hooksAfterByValidator[$label])) {
-                    $subset = [$label => $this->meta['validators'][$label]];
-                    foreach ($this->hooksAfterByValidator[$label] as $h) {
-                        try {
-                            $h->onAfterValidate($hookDto, $subset);
-                        } catch (\Throwable $ignored) {
+                    $this->meta['validators'][$label][] = $item;
+
+                    if (!empty($this->hooksAfterByValidator[$label])) {
+                        $subset = [$label => $this->meta['validators'][$label]];
+                        foreach ($this->hooksAfterByValidator[$label] as $h) {
+                            try {
+                                $h->onAfterValidate($hookDto, $subset);
+                            } catch (\Throwable $ignored) {
+                            }
                         }
                     }
+                } catch (ValidationException $e) {
+                    // Record failing validator meta before propagating the exception.
+                    $failMeta = [
+                        'status'     => 'FAIL',
+                        'error_code' => $e->getErrorCode(),
+                        'field'      => $e->getField(),
+                    ];
+
+                    $exMeta = $e->getMeta();
+                    if (\is_array($exMeta) && $exMeta !== []) {
+                        $failMeta['meta'] = $exMeta;
+                    }
+
+                    $this->meta['validators'][$label][] = $failMeta;
+
+                    if (!empty($this->hooksAfterByValidator[$label])) {
+                        $subset = [$label => $this->meta['validators'][$label]];
+                        foreach ($this->hooksAfterByValidator[$label] as $h) {
+                            try {
+                                $h->onAfterValidate($hookDto, $subset);
+                            } catch (\Throwable $ignored) {
+                            }
+                        }
+                    }
+
+                    // Rethrow so that global error handling and message mapping remain the same.
+                    throw $e;
                 }
             }
 
@@ -420,7 +448,7 @@ final class ContactFormService
                 return $this->fail($code, $this->messages->resolve($code), array_merge($data->meta, $this->meta));
             }
 
-            // (Zachowuję starszą składnię wywołania budowy emaila)
+            // Legacy call style for outbound email building.
             $email = OutboundEmail::fromContactData(
                 $data,
                 $this->smtpConfig ?? [],
