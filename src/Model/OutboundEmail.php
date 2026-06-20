@@ -6,7 +6,7 @@ namespace rafalmasiarek\ContactForm\Model;
 
 use rafalmasiarek\ContactForm\Model\ContactData;
 use rafalmasiarek\ContactForm\Contracts\EmailTemplateInterface;
-use rafalmasiarek\ContactForm\Core\DefaultContactTemplate;
+use rafalmasiarek\ContactForm\Support\DefaultContactTemplate;
 
 /**
  * Value object representing an outbound email ready to be sent.

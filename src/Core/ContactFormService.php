@@ -9,6 +9,9 @@ use rafalmasiarek\ContactForm\Contracts\EmailSenderInterface;
 use rafalmasiarek\ContactForm\Contracts\AttemptLoggerInterface;
 use rafalmasiarek\ContactForm\Contracts\ContactFormHookInterface;
 use rafalmasiarek\ContactForm\Contracts\EmailTemplateInterface;
+use rafalmasiarek\ContactForm\Contracts\IpResolverInterface;
+
+use rafalmasiarek\ContactForm\Support\DefaultIpResolver;
 
 use rafalmasiarek\ContactForm\Core\ContactDataHook;
 use rafalmasiarek\ContactForm\Core\Codes;
@@ -96,6 +99,13 @@ final class ContactFormService
     private MessageResolverInterface $messages;
 
     /**
+     * Optional IP/UA resolver used as fallback when client context is not provided via withContext().
+     *
+     * @var IpResolverInterface|null
+     */
+    private ?IpResolverInterface $ipResolver = null;
+
+    /**
      * Aggregated meta bag collected from validators, hooks and request data.
      *
      * @var array<string,mixed>
@@ -133,6 +143,24 @@ final class ContactFormService
     {
         // later context wins
         $this->context = $ctx + $this->context;
+        return $this;
+    }
+
+    /**
+     * Inject a custom IP/UA resolver used as fallback when client context is absent.
+     *
+     * If not set, {@see DefaultIpResolver} is used (reads from $_SERVER, no proxy headers).
+     * Behind a reverse proxy inject your own implementation that validates trusted ranges.
+     *
+     * The resolver is only consulted when 'client.ip' or 'client.ua' are missing from the
+     * context provided via {@see withContext()}. Explicit context always takes priority.
+     *
+     * @param IpResolverInterface $resolver
+     * @return $this
+     */
+    public function withIpResolver(IpResolverInterface $resolver): self
+    {
+        $this->ipResolver = $resolver;
         return $this;
     }
 
@@ -338,6 +366,21 @@ final class ContactFormService
      */
     public function process(ContactData $data): array
     {
+        // Resolve IP/UA via injected resolver when not provided via withContext().
+        $resolver = $this->ipResolver ?? new DefaultIpResolver();
+        if (empty($this->context['client']['ip'])) {
+            $resolved = $resolver->resolveClientIp();
+            if ($resolved !== null) {
+                $this->context['client']['ip'] = $resolved;
+            }
+        }
+        if (empty($this->context['client']['ua'])) {
+            $resolved = $resolver->resolveUserAgent();
+            if ($resolved !== null) {
+                $this->context['client']['ua'] = $resolved;
+            }
+        }
+
         // Attach selected client/server context into meta (if provided)
         if (isset($this->context['client']) && is_array($this->context['client'])) {
             $client = $this->context['client'];

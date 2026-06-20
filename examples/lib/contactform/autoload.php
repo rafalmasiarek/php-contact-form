@@ -21,13 +21,16 @@ $__cf_classmap = [
     'rafalmasiarek\\ContactForm\\Contracts\\EmailSenderInterface'        => 'Contracts/EmailSenderInterface.php',
     'rafalmasiarek\\ContactForm\\Contracts\\EmailTemplateInterface'      => 'Contracts/EmailTemplateInterface.php',
     'rafalmasiarek\\ContactForm\\Contracts\\AttemptLoggerInterface'      => 'Contracts/AttemptLoggerInterface.php',
+    'rafalmasiarek\\ContactForm\\Contracts\\IpResolverInterface'         => 'Contracts/IpResolverInterface.php',
 
     'rafalmasiarek\\ContactForm\\Model\\ContactData'         => 'Model/ContactData.php',
     'rafalmasiarek\\ContactForm\\Model\\OutboundEmail'       => 'Model/OutboundEmail.php',
 
-    'rafalmasiarek\\ContactForm\\Support\\ArrayMessageResolver'  => 'Support/ArrayMessageResolver.php',
-    'rafalmasiarek\\ContactForm\\Support\\ContactDataValidator'  => 'Support/ContactDataValidator.php',
-    'rafalmasiarek\\ContactForm\\Support\\NullLogger'            => 'Support/NullLogger.php',
+    'rafalmasiarek\\ContactForm\\Support\\ArrayMessageResolver'   => 'Support/ArrayMessageResolver.php',
+    'rafalmasiarek\\ContactForm\\Support\\ContactDataValidator'   => 'Support/ContactDataValidator.php',
+    'rafalmasiarek\\ContactForm\\Support\\NullLogger'             => 'Support/NullLogger.php',
+    'rafalmasiarek\\ContactForm\\Support\\DefaultContactTemplate' => 'Support/DefaultContactTemplate.php',
+    'rafalmasiarek\\ContactForm\\Support\\DefaultIpResolver'      => 'Support/DefaultIpResolver.php',
 
     'rafalmasiarek\\ContactForm\\Mail\\PhpMailerEmailSender'     => 'Mail/PhpMailerEmailSender.php',
 ];
