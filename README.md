@@ -10,6 +10,7 @@ Lightweight, framework-agnostic contact form service for PHP. It gives you a tin
 - **Transports**: PHPMailer adapter (SMTP) or native mail() sender.
 - **i18n-friendly messages**: resolve human texts via codes with ArrayMessageResolver.
 - **PSR-7 friendly**: easy to slot into Slim, Laminas, etc.
+- **IP/UA resolution**: built-in `DefaultIpResolver` for raw PHP; inject your own `IpResolverInterface` behind a proxy.
 - **Batteries included examples**: demo app with MailHog Docker, simple math CAPTCHA (hook + validator), required fields + email validators, IP annotation hook.
 
 > Namespace: `rafalmasiarek\ContactForm` (PSR‑4 autoload).  
@@ -97,9 +98,38 @@ $data = new \rafalmasiarek\ContactForm\Model\ContactData(
 echo json_encode($service->process($data));
 ```
 
+## IP / User-Agent resolution
+
+The service automatically resolves client IP and User-Agent as a fallback when they are not provided via `withContext()`.
+
+**Raw PHP (no proxy)** — works out of the box, `DefaultIpResolver` reads from `$_SERVER['REMOTE_ADDR']`:
+```php
+$service = new ContactFormService($smtp);
+// DefaultIpResolver is used automatically — no config needed
+```
+
+**Behind a proxy** (Nginx, Cloudflare, load balancer) — inject your own implementation that validates trusted proxy ranges before trusting forwarded headers:
+```php
+$service = (new ContactFormService($smtp))
+    ->withIpResolver(new MyPsr7IpResolver($request));
+```
+
+**PSR-7 apps (Slim, Laminas)** — pass the already-resolved IP via `withContext()`; this always takes priority over the resolver:
+```php
+$service = (new ContactFormService($smtp))
+    ->withContext([
+        'client' => [
+            'ip' => $request->getAttribute('client_ip'),
+            'ua' => $request->getHeaderLine('User-Agent'),
+        ],
+    ]);
+```
+
+`IpResolverInterface` lives in `Contracts/`; `DefaultIpResolver` in `Support/`.
+
 ## PSR‑7 / Middlewares
 
-Add a middleware in your app that attaches `client` to request attributes and pass it via `withContext()`.
+Add a middleware in your app that resolves the real client IP and pass it via `withContext()`.
 
 ## Hooks
 
@@ -131,7 +161,7 @@ Any callable validator is accepted. Library provides helper DTO `ContactDataVali
 
 - Namespace is stable: `rafalmasiarek\ContactForm`.
 - All classes are PSR‑4 autoloaded from `/src`.
-- `DefaultIpResolverInterface` keeps a backward‑compatible constructor; prefer `Psr7IpResolverInterface` in PSR‑7 apps.
+- `DefaultContactTemplate` moved from `Core\` to `Support\` — update your `use` statements if you reference it directly.
 
 ## License
 
