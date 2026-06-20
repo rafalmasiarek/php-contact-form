@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace rafalmasiarek\ContactForm\Core;
+namespace rafalmasiarek\ContactForm\Support;
 
 use rafalmasiarek\ContactForm\Contracts\EmailTemplateInterface;
 use rafalmasiarek\ContactForm\Model\ContactData;
