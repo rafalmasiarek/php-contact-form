@@ -81,6 +81,16 @@ final class ArrayMessageResolver implements MessageResolverInterface
     }
 
     /**
+     * Return all registered descriptors keyed by error code.
+     *
+     * @return array<string, array{message:string, http?:int}>
+     */
+    public function all(): array
+    {
+        return $this->map;
+    }
+
+    /**
      * Merge descriptors into resolver (normalizing flexible input).
      *
      * @param array<string, string|array<string, mixed>> $map
