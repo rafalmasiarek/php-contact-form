@@ -28,7 +28,7 @@ use rafalmasiarek\ContactForm\Contracts\MessageResolverInterface;
 final class ArrayMessageResolver implements MessageResolverInterface
 {
     /** Fallback text for any descriptor that would otherwise carry no message. */
-    private const FALLBACK_MESSAGE = 'Unexpected error.';
+    private const UNEXPECTED_ERROR_MESSAGE = 'Unexpected error.';
 
     /**
      * @var array<string, array{message:string, http?:int}>
@@ -46,7 +46,7 @@ final class ArrayMessageResolver implements MessageResolverInterface
             Codes::ERR_VALIDATION  => ['message' => 'Validation failed.',                  'http' => 422],
             Codes::ERR_NO_SENDER   => ['message' => 'Email sender is not configured.',      'http' => 500],
             Codes::ERR_SEND_FAILED => ['message' => 'Message could not be sent.',          'http' => 502],
-            Codes::ERR_UNEXPECTED  => ['message' => self::FALLBACK_MESSAGE,                'http' => 500],
+            Codes::ERR_UNEXPECTED  => ['message' => self::UNEXPECTED_ERROR_MESSAGE, 'http' => 500],
         ]);
 
         if ($map !== []) {
@@ -122,7 +122,7 @@ final class ArrayMessageResolver implements MessageResolverInterface
     private function normalizeDescriptor(string $code, string|array $value): array
     {
         if (\is_string($value)) {
-            return ['message' => $value !== '' ? $value : self::FALLBACK_MESSAGE];
+            return ['message' => $value !== '' ? $value : self::UNEXPECTED_ERROR_MESSAGE];
         }
 
         // message
@@ -132,7 +132,7 @@ final class ArrayMessageResolver implements MessageResolverInterface
             ?? (isset($value['title']) ? (string)$value['title'] : '');
 
         if (!\is_string($message) || $message === '') {
-            $message = self::FALLBACK_MESSAGE;
+            $message = self::UNEXPECTED_ERROR_MESSAGE;
         }
 
         // http (ignore errco entirely)
