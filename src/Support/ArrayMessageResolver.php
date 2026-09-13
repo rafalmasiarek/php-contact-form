@@ -67,17 +67,16 @@ final class ArrayMessageResolver implements MessageResolverInterface
 
     /**
      * Describe a code (message + optional suggested HTTP).
-     * Unknown codes return ['message' => $code].
+     * Unknown codes fall back to the ERR_UNEXPECTED descriptor — never the raw
+     * code string, which would otherwise leak an internal identifier as if it
+     * were a human-readable message.
      *
      * @param string $code
      * @return array{message:string, http?:int}
      */
     public function describe(string $code): array
     {
-        if (!isset($this->map[$code])) {
-            return ['message' => $code];
-        }
-        return $this->map[$code];
+        return $this->map[$code] ?? $this->map[Codes::ERR_UNEXPECTED];
     }
 
     /**
