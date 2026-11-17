@@ -9,7 +9,7 @@ context:
     > Namespace: `rafalmasiarek\ContactForm` (PSR‑4 autoload).
     > PHP: **^8.0**
 
-includes:
+footer_includes:
   - docs/usage.md
   - docs/migration.md
   - docs/api.md
