@@ -1,0 +1,20 @@
+name: php-contact-form
+repo_url: https://github.com/rafalmasiarek/php-contact-form
+license: MIT
+
+context:
+  - |
+    Lightweight, framework-agnostic contact form service for PHP. It gives you a tiny, pluggable pipeline (hooks + validators), a simple DTO for requests, and transport-agnostic email sending (PHPMailer SMTP or native mail()), with example wiring for MailHog. Works with Composer or a standalone autoloader.
+
+    > Namespace: `rafalmasiarek\ContactForm` (PSR‑4 autoload).
+    > PHP: **^8.0**
+
+includes:
+  - docs/usage.md
+  - docs/migration.md
+  - docs/api.md
+
+authors:
+  - name: Rafał Masiarek
+    github: rafalmasiarek
+    website: https://masiarek.pl
